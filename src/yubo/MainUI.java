@@ -2,15 +2,27 @@ package yubo;
 
 import java.awt.EventQueue;
 import java.net.Inet4Address;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
+import javafx.scene.chart.PieChart.Data;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JTextArea;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class MainUI extends JFrame {
 
@@ -19,16 +31,17 @@ public class MainUI extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField remoteIP;
-	private JTextField remotePort;
-	private JTextField textField;
-	private JTextField sendText;
-	private JLabel myIP;
-	private JLabel myPort;
+	private JTextField remoteIP;//远程IP
+	private JTextField remotePort;//远程端口
+	private JTextField sendText;//发送数据的输入框
+	private JLabel myIP;//我的IP
+	private JLabel myPort;//我的端口
 	private JLabel label_2;
 	
 	private Receive receive;
 	private Send send;
+	private JTextArea textArea;//聊天显示区域
+	private JScrollPane scrollPane;//滚动的显示界面
 
 	/**
 	 * Launch the application.
@@ -78,15 +91,10 @@ public class MainUI extends JFrame {
 		contentPane.add(remotePort);
 		remotePort.setColumns(10);
 		
-		textField = new JTextField();
-		textField.setEditable(false);
-		textField.setBounds(6, 196, 302, 172);
-		contentPane.add(textField);
-		textField.setColumns(10);
-		
 		myIP = new JLabel("New label");
 		myIP.setBounds(178, 25, 130, 16);
 		contentPane.add(myIP);
+		//得到自己电脑的IP地址
 		try{
 		myIP.setText(Inet4Address.getLocalHost().getHostAddress());
 		}catch (Exception e) {
@@ -108,6 +116,14 @@ public class MainUI extends JFrame {
 		contentPane.add(lblYaofasong);
 		
 		sendText = new JTextField();
+		sendText.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					event();
+				}
+			}
+		});
 		sendText.setBounds(6, 408, 270, 26);
 		contentPane.add(sendText);
 		sendText.setColumns(10);
@@ -115,12 +131,12 @@ public class MainUI extends JFrame {
 		init();
 		
 		JButton sendButton = new JButton("发送");
+		//鼠标监听事件。发送消息并显示
 		sendButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount()==1){
-					send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),sendText.getText());
-					textField.setText(textField.getText()+"发送："+sendText.getText()+"    ");
+					event();
 				}
 			}
 		});
@@ -130,18 +146,43 @@ public class MainUI extends JFrame {
 		label_2 = new JLabel("聊天内容：");
 		label_2.setBounds(6, 173, 85, 16);
 		contentPane.add(label_2);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(6, 216, 317, 150);
+		contentPane.add(scrollPane);
+		
+		textArea = new JTextArea();
+		scrollPane.setViewportView(textArea);
+		
+		
+		
+		
 	}
-	
+	//设置端口
 	public void setMyPort(int Port) {
 		myPort.setText(""+Port);
 	}
-	
+	//收到的消息
 	public void setReceive(String receive) {
-		textField.setText(textField.getText()+"收到："+receive+"\n");
+		textArea.setText(textArea.getText()+"接收时间："+getTime()+"\n"+"收到："+receive+"\n");
 	}
-	
+	//初始化
 	public void init() {
 		send=new Send(0, this);
 		receive=new Receive(this);
+	}
+	
+	public String getTime()
+	{
+		Date date=new Date(System.currentTimeMillis());
+		DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String time=format.format(date);
+		return time;
+	}
+	
+	public void event() {
+		send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),sendText.getText());
+		textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+sendText.getText()+"\n");
+		sendText.setText("");
 	}
 }
