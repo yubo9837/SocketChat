@@ -11,10 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
-import javafx.scene.chart.PieChart.Data;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -26,9 +22,6 @@ import java.awt.event.KeyEvent;
 
 public class MainUI extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField remoteIP;//远程IP
@@ -38,13 +31,12 @@ public class MainUI extends JFrame {
 	private JLabel myPort;//我的端口
 	private JLabel label_2;
 	
-	private Receive receive;
 	private Send send;
 	private JTextArea textArea;//聊天显示区域
 	private JScrollPane scrollPane;//滚动的显示界面
 
 	/**
-	 * Launch the application.
+	 * 启动程序
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -59,10 +51,15 @@ public class MainUI extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public MainUI() {
+		initUI();
+		//初始化send,receive
+		send=new Send(0, this);
+		new Receive(this);
+	}
+	
+	//初始化界面
+	private void initUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 401, 492);
 		contentPane = new JPanel();
@@ -115,6 +112,7 @@ public class MainUI extends JFrame {
 		lblYaofasong.setBounds(16, 380, 111, 16);
 		contentPane.add(lblYaofasong);
 		
+		//键盘监听事件，与鼠标监听事件相同
 		sendText = new JTextField();
 		sendText.addKeyListener(new KeyAdapter() {
 			@Override
@@ -127,8 +125,6 @@ public class MainUI extends JFrame {
 		sendText.setBounds(6, 408, 270, 26);
 		contentPane.add(sendText);
 		sendText.setColumns(10);
-		
-		init();
 		
 		JButton sendButton = new JButton("发送");
 		//鼠标监听事件。发送消息并显示
@@ -153,25 +149,19 @@ public class MainUI extends JFrame {
 		
 		textArea = new JTextArea();
 		scrollPane.setViewportView(textArea);
-		
-		
-		
-		
 	}
+	
 	//设置端口
 	public void setMyPort(int Port) {
 		myPort.setText(""+Port);
 	}
-	//收到的消息
+	
+	//显示收到的消息
 	public void setReceive(String receive) {
 		textArea.setText(textArea.getText()+"接收时间："+getTime()+"\n"+"收到："+receive+"\n");
 	}
-	//初始化
-	public void init() {
-		send=new Send(0, this);
-		receive=new Receive(this);
-	}
 	
+	//得到时间
 	public String getTime()
 	{
 		Date date=new Date(System.currentTimeMillis());
@@ -180,9 +170,13 @@ public class MainUI extends JFrame {
 		return time;
 	}
 	
+	//点击发送或按enter时执行的方法
 	public void event() {
+		//发送消息
 		send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),sendText.getText());
+		//显示发送的消息
 		textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+sendText.getText()+"\n");
+		//清空输入框
 		sendText.setText("");
 	}
 }

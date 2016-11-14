@@ -14,11 +14,14 @@ public class Send {
 		this.mainUI=mainUI;
 	}
 	
-	public void notRun() {
+	public void mainSend() {
 		InetSocketAddress inetSocketAddress=new InetSocketAddress(remoteIP, remotePort);
 		try{
+			//新建socket对象
 			Socket socket=new Socket();
+			//socket连接远程主机
 			socket.connect(inetSocketAddress);
+			//将要发送的消息传到socket的输出流中
 			OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream());
 			writer.write(message);
 			writer.flush();
@@ -30,10 +33,11 @@ public class Send {
 		}
 	}
 	
+	//发送消息的方法
 	public void  sendMessage(String remoteIP,int remotePort,String message) {
 		this.remoteIP=remoteIP;
 		this.remotePort=remotePort;
 		this.message=message;
-		notRun();
+		mainSend();
 	}
 }
