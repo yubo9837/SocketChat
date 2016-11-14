@@ -8,6 +8,7 @@ public class Receive extends Thread{
 	
 	private ServerSocket serverSocket;
 	private MainUI mainUI;
+	private Send send;
 	
 	public Receive (MainUI mainUI){
 		this.mainUI=mainUI;

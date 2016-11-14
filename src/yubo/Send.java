@@ -14,7 +14,7 @@ public class Send {
 		this.mainUI=mainUI;
 	}
 	
-	public void mainSend() {
+	private void mainSend() {
 		InetSocketAddress inetSocketAddress=new InetSocketAddress(remoteIP, remotePort);
 		try{
 			//新建socket对象

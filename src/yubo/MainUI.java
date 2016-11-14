@@ -5,6 +5,8 @@ import java.net.Inet4Address;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -34,6 +36,9 @@ public class MainUI extends JFrame {
 	private Send send;
 	private JTextArea textArea;//聊天显示区域
 	private JScrollPane scrollPane;//滚动的显示界面
+	private JButton buttonThree;
+	
+	private static String ACK="ACK";
 
 	/**
 	 * 启动程序
@@ -61,7 +66,7 @@ public class MainUI extends JFrame {
 	//初始化界面
 	private void initUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 401, 492);
+		setBounds(100, 100, 493, 492);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -149,8 +154,112 @@ public class MainUI extends JFrame {
 		
 		textArea = new JTextArea();
 		scrollPane.setViewportView(textArea);
+		
+		JLabel label_3 = new JLabel("四种情况");
+		label_3.setBounds(356, 131, 61, 16);
+		contentPane.add(label_3);
+		
+		//设置四种情况的启动按钮
+		JButton buttonOne = new JButton("一");
+		buttonOne.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				sit1();
+			}
+		});
+		buttonOne.setBounds(356, 168, 117, 29);
+		contentPane.add(buttonOne);
+		
+		JButton buttonTwo = new JButton("二");
+		buttonTwo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				sit2();
+			}
+		});
+		buttonTwo.setBounds(356, 213, 117, 29);
+		contentPane.add(buttonTwo);
+		
+		buttonThree = new JButton("三");
+		buttonThree.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				sit3();
+			}
+		});
+		buttonThree.setBounds(356, 254, 117, 29);
+		contentPane.add(buttonThree);
+		
+		JButton buttonFour = new JButton("四");
+		buttonFour.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				sit4();
+			}
+		});
+		buttonFour.setBounds(356, 295, 117, 29);
+		contentPane.add(buttonFour);
 	}
 	
+	//情景1
+	private void sit1() {
+		//清空聊天窗口
+		textArea.setText("");
+		//发送消息
+		send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),"hello");
+		//显示发送的消息
+		textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+"hello"+"\n");
+		
+	}
+	
+	//情景2
+	private void sit2() {
+		//清空聊天窗口
+		textArea.setText("");
+		textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+"hello"+"\n");
+		//发送消息
+		Timer timer=new Timer();//实例化Timer类   
+		timer.schedule(new TimerTask(){
+		public void run(){
+			send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),"hello");
+			textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+"hello"+"\n");}
+		},2000);//五百毫秒
+		
+		//显示发送的消息
+		
+	}
+		
+	//情景3
+	private void sit3() {
+		//清空聊天窗口
+		textArea.setText("");
+		//发送消息
+		send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),"hello3");
+		//显示发送的消息
+		textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+"hello3"+"\n");
+		Timer timer=new Timer();//实例化Timer类   
+		timer.schedule(new TimerTask(){
+		public void run(){
+			send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),"hello");
+			textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+"hello"+"\n");}
+		},2000);//五百毫秒
+	}
+		
+	//情景4
+	private void sit4() {
+		//清空聊天窗口
+		textArea.setText("");
+		//发送消息
+		send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),"hello4");
+		//显示发送的消息
+		textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+"hello4"+"\n");
+		Timer timer=new Timer();//实例化Timer类   
+		timer.schedule(new TimerTask(){
+		public void run(){
+			textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+"hello4"+"\n");}
+		},2000);//五百毫秒
+	}
+		
 	//设置端口
 	public void setMyPort(int Port) {
 		myPort.setText(""+Port);
@@ -159,6 +268,27 @@ public class MainUI extends JFrame {
 	//显示收到的消息
 	public void setReceive(String receive) {
 		textArea.setText(textArea.getText()+"接收时间："+getTime()+"\n"+"收到："+receive+"\n");
+		if (receive.equals("hello3")) {
+			textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+ACK+"\n");
+		}else if (receive.equals("hello4")) {
+			textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+ACK+"\n");
+			Timer timer=new Timer();//实例化Timer类   
+			timer.schedule(new TimerTask(){
+			public void run(){
+				send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),ACK);
+				textArea.setText(textArea.getText()+"接收时间："+getTime()+"\n"+"收到："+"hello4"+"\n");
+				textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+ACK+"\n");
+				}
+			},2500);//五百毫秒
+			timer.schedule(new TimerTask(){
+			public void run(){
+				send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),ACK);
+				}
+			},4000);//五百毫秒
+		}else if(!receive.equals(ACK)){
+			send.sendMessage(remoteIP.getText(),Integer.parseInt(remotePort.getText()),ACK);
+			textArea.setText(textArea.getText()+"发送时间："+getTime()+"\n"+"发送："+ACK+"\n");
+		}
 	}
 	
 	//得到时间
